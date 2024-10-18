@@ -24,6 +24,7 @@
 #if defined(SAMSUNG_COMPANION) || defined(SAMSUNG_EEPROM)
 #include "SecCameraUtil.h"
 #endif
+#include <camera/CameraParameters.h>
 
 #define V4L2_FOURCC_LENGTH 5
 
@@ -458,7 +459,7 @@ private:
     bool            m_isSupportedPictureSize(const int width, const int height);
     bool            m_isSupportedVideoSize(const int width, const int height);
     bool            m_isHighResolutionCallbackSize(const int width, const int height);
-    void            m_isHighResolutionMode(const CameraParameters& params);
+    void            m_isHighResolutionMode(const android::CameraParameters& params);
     status_t        m_getPreviewSizeList(int *sizeList);
 
     void            m_getSWVdisPreviewSize(int w, int h, int *newW, int *newH);
@@ -572,6 +573,8 @@ public:
     int                 getSeriesShotSaveLocation(void);
     void                setSeriesShotSaveLocation(int ssaveLocation);
     char                *getSeriesShotFilePath(void);
+    int                 m_seriesShotSaveLocation;
+    char                m_seriesShotFilePath[100];
 #endif
     int                 getSeriesShotMode(void);
 

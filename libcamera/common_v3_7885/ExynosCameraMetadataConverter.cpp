@@ -19,6 +19,7 @@
 
 #include "ExynosCameraMetadataConverter.h"
 #include "ExynosCameraRequestManager.h"
+#include "ExynosCameraAvailabilityTable.h"
 
 namespace android {
 #define SET_BIT(x)      (1 << x)

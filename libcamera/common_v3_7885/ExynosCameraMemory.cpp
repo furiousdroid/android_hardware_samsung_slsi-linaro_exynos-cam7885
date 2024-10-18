@@ -164,8 +164,8 @@ sp<GraphicBuffer> ExynosCameraGraphicBufferAllocator::m_alloc(int index,
     if (planeCount == 1) {
         m_privateHandle[index] = new private_handle_t(fdArr[0], -1, -1, bufSize[0], 0, 0, grallocUsage, width, height,
             halPixelFormat, halPixelFormat, halPixelFormat, width, height, 0);
-
-        m_privateHandle[index]->base = (uint64_t)bufAddr[0];
+            
+        m_privateHandle[index]->base = (uint64_t*)bufAddr[0];
         m_privateHandle[index]->offset = 0;
     } else {
         android_printAssert(NULL, LOG_TAG, "ASSERT(%s[%d]):planeCount(%d) is not yet support, assert!!!!",

@@ -21,7 +21,8 @@
 
 namespace android {
 
-ExynosCamera3RequestResult::ExynosCamera3RequestResult(uint32_t key, uint32_t frameCount, EXYNOS_REQUEST_RESULT::TYPE type, camera3_capture_result *captureResult, camera3_notify_msg_t *notityMsg)
+ExynosCamera3RequestResult::ExynosCamera3RequestResult(uint32_t key, uint32_t frameCount, EXYNOS_REQUEST_RESULT::TYPE type, camera3_capture_result *captureResult, camera3_notify_msg_t *notityMsg) : 
+    ExynosCameraRequestResult::ExynosCameraRequestResult(key, frameCount, key, type){
 {
     m_init();
 
@@ -69,7 +70,7 @@ ExynosCamera3RequestResult::ExynosCamera3RequestResult(uint32_t key, uint32_t fr
 
         break;
     }
-
+   }
 }
 
 ExynosCamera3RequestResult::~ExynosCamera3RequestResult()
@@ -960,9 +961,10 @@ int ExynosCamera3Request::getRequestId(void) {
 ResultRequest ExynosCamera3Request::popResult(uint32_t resultKey)
 {
     ResultRequest result = NULL;
-
+    status_t ret = NO_ERROR;
+    
     result = m_popResult(resultKey, &m_resultList, &m_resultListLock);
-    if (result < 0){
+    if (ret < 0){
         CLOGE2("popResult is failed request - Key(%u) frameCount(%u) /  result - Key(%u) frameCount(%u)",
             m_key, m_frameCount, result->getKey(), result->getFrameCount());
         result = NULL;
@@ -974,9 +976,10 @@ ResultRequest ExynosCamera3Request::popResult(uint32_t resultKey)
 ResultRequest ExynosCamera3Request::getResult(uint32_t resultKey)
 {
     ResultRequest result = NULL;
-
+    status_t ret = NO_ERROR;
+    
     result = m_getResult(resultKey, &m_resultList, &m_resultListLock);
-    if (result < 0){
+    if (ret < 0){
         CLOGE2("popResult is failed request - Key(%u) frameCount(%u) /  result - Key(%u) frameCount(%u)",
             m_key, m_frameCount, result->getKey(), result->getFrameCount());
         result = NULL;
@@ -2735,7 +2738,7 @@ status_t ExynosCameraRequestManager::m_sendCallbackResult(ResultRequest result)
 
     switch(result->getType()){
     case EXYNOS_REQUEST_RESULT::CALLBACK_NOTIFY_ONLY:
-        result->getNofityMsg(&notify_msg);
+        result->getNotifyMsg(&notify_msg);
         m_callbackOpsNotify(&notify_msg);
         break;
     case EXYNOS_REQUEST_RESULT::CALLBACK_BUFFER_ONLY:

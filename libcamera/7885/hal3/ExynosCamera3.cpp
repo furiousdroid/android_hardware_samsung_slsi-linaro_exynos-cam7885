@@ -183,7 +183,7 @@ ExynosCamera3::ExynosCamera3(int cameraId, camera_metadata_t **info):
     m_checkConfigStream = false;
     m_flushFlag = false;
     m_flushWaitEnable = false;
-    m_internalFrameCount = FRAME_INTERNAL_START_COUNT;
+    m_internalFrameCount = 0;
     m_isNeedInternalFrame = false;
     m_isNeedRequestFrame = false;
     m_currentShot = new struct camera2_shot_ext;
@@ -3874,7 +3874,7 @@ bool ExynosCamera3::m_frameFactoryStartThreadFunc(void)
         return false;
     }
 
-    m_internalFrameCount = FRAME_INTERNAL_START_COUNT;
+    m_internalFrameCount = 0;
 
     /* Set default request flag & buffer manager */
     ret = m_setupPipeline();

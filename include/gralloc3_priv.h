@@ -344,6 +344,200 @@ struct private_handle_t : public native_handle
 	static const int sMagic = 0x3141592;
 
 	private_handle_t(int _fd, int _fd1, int _fd2, int _size, int _size1, int _size2,
+	                 int _flags, int _width, int _height, int _format, 
+	                 uint64_t _internal_format, int _frameworkFormat,
+	                 int _stride, int _vstride, int _is_compressible)
+		: fd(_fd)
+		, magic(sMagic)
+		, flags(_flags)
+		, width(_width)
+		, height(_height)
+		, frameworkFormat(_frameworkFormat)
+		, producer_usage(1)
+		, consumer_usage(1)
+		, internal_format(_internal_format)
+		, alloc_format(_internal_format)
+		, stride(_stride)
+		, layer_count(1)
+		, base(NULL)
+		, backing_store_id(0x0)
+		, backing_store_size(0)
+		, cpu_read(0)
+		, cpu_write(0)
+		, allocating_pid(getpid())
+		, remote_pid(-1)
+		, ref_count(1)
+		, yuv_info(MALI_YUV_NO_INFO)
+		, fb_fd(-1)
+		, offset(0)
+		, min_pgsz(4096)
+		, is_compressible(_is_compressible)
+		, plane_count(1)
+	{
+//		GRALLOC_UNUSED(_byte_stride);
+
+		version = sizeof(native_handle);
+
+		fd1 = fd2 = fd3 = fd4 = -1;
+		size= _size;
+		size1 = _size1;
+		size2 = _size2;
+
+		numFds = sNumFds - 1;
+		numInts = NUM_INTS_IN_PRIVATE_HANDLE + 1;
+
+		if (_fd1 != -1)
+		{
+			fd1 = _fd1;
+			numFds++;
+			numInts--;
+		}
+		if (_fd2 != -1)
+		{
+			fd2 = _fd2;
+			numFds++;
+			numInts--;
+		}
+
+		bases[1] = 0;
+		bases[2] = 0;
+
+		plane_offset = 0;
+		byte_stride = _stride;
+		alloc_width = _stride;
+		vstride = _vstride;
+
+		GRALLOC_UNUSED(_format);
+
+		int luma_vstride = height;
+		int chroma_size = 0;
+		int luma_size = 0;
+		int ext_size = 256;
+
+		ion_handles[0] = ion_handles[1] = ion_handles[2] = -1;
+
+		switch(internal_format)
+		{
+			case HAL_PIXEL_FORMAT_YCrCb_420_SP:
+				plane_info[0].offset = 0;
+				plane_info[0].byte_stride = byte_stride;
+				plane_info[0].alloc_width = stride;
+				plane_info[0].alloc_height = vstride;
+
+				plane_info[1].offset = stride * vstride;
+				plane_info[1].byte_stride = byte_stride;
+				plane_info[1].alloc_width = stride;
+				plane_info[1].alloc_height = vstride / 2;
+
+				plane_count = 2;
+				break;
+
+			case HAL_PIXEL_FORMAT_YCbCr_422_SP:
+				plane_info[0].offset = 0;
+				plane_info[0].byte_stride = byte_stride;
+				plane_info[0].alloc_width = stride;
+				plane_info[0].alloc_height = vstride;
+
+				plane_info[1].offset = stride * vstride;
+				plane_info[1].byte_stride = byte_stride;
+				plane_info[1].alloc_width = stride;
+				plane_info[1].alloc_height = vstride;
+
+				plane_count = 2;
+				break;
+
+			case HAL_PIXEL_FORMAT_YCbCr_422_I:
+				luma_vstride = height;
+				chroma_size = GRALLOC_PLANE_SIZE(stride, luma_vstride, ext_size);
+				luma_size = GRALLOC_PLANE_SIZE(stride, luma_vstride, 0);
+
+
+				plane_info[0].alloc_width  = stride;
+				plane_info[0].alloc_height = luma_vstride * 2;
+				plane_info[0].byte_stride  = byte_stride;
+				plane_info[0].offset       = 0;
+
+				plane_count = 1;
+				break;
+
+			case 0x11f: // HAL_PIXEL_FORMAT_EXYNOS_YCbCr_420_P:
+				chroma_size = GRALLOC_PLANE_SIZE(GRALLOC_ALIGN(stride / 2, 16), height, ext_size);
+				luma_size = GRALLOC_PLANE_SIZE(stride, height, 0);
+
+
+				plane_info[0].alloc_width  = _stride;
+				plane_info[0].alloc_height = height;
+				plane_info[0].byte_stride  = byte_stride;
+				plane_info[0].offset       = 0;
+
+				plane_info[1].alloc_width  = GRALLOC_ALIGN(_stride / 2, 16);
+				plane_info[1].alloc_height = height;
+				plane_info[1].byte_stride  = byte_stride;
+				plane_info[1].offset       = luma_size;
+
+				plane_count = 3;
+				break;
+
+			case 0x123: //HAL_PIXEL_FORMAT_EXYNOS_YCbCr_420_SPN:
+				chroma_size = GRALLOC_NV12N_S8B_CHROMA_SIZE(stride, GRALLOC_ALIGN(luma_vstride / 2, GRALLOC_CHROMA_VALIGN), ext_size);
+				luma_size = GRALLOC_NV12N_S8B_LUMA_SIZE(stride, luma_vstride, ext_size);
+
+				if (width % GRALLOC_MSCL_ALIGN)
+				{
+					luma_size += GRALLOC_MSCL_EXT_SIZE;
+					chroma_size += GRALLOC_MSCL_EXT_SIZE/2;
+				}
+
+				plane_info[0].alloc_width  = stride;
+				plane_info[0].alloc_height = luma_vstride;
+				plane_info[0].byte_stride  = byte_stride;
+				plane_info[0].offset       = 0;
+
+				plane_info[1].alloc_width  = stride;
+				plane_info[1].alloc_height = GRALLOC_ALIGN(luma_vstride / 2, GRALLOC_CHROMA_VALIGN);
+				plane_info[1].byte_stride  = byte_stride;
+				plane_info[1].offset       = luma_size;
+
+				plane_count = 2;
+				break;
+
+			default:
+				ALOGE("unknown format from Camera HAL");
+				break;
+		}
+
+/* Experimental: Allocate share attr FD for buffer created externally by 7885 Camera HAL. */
+#if 0
+		int share_attr_fd = ashmem_create_region("gralloc_shared_attr", PAGE_SIZE);
+		if (share_attr_fd < 0)
+		{
+			ALOGE("Failed to allocate page for shared attribute region");
+			return;
+		}
+
+		attr_base = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, share_attr_fd, 0);
+
+		if (attr_base != MAP_FAILED)
+		{
+			memset(attr_base, 0xff, PAGE_SIZE);
+			munmap(attr_base, PAGE_SIZE);
+			attr_base = MAP_FAILED;
+		}
+		else
+		{
+			ALOGE("Failed to mmap shared attribute region");
+			close(share_attr_fd);
+			return;
+		}
+
+		fd1 = share_attr_fd;
+
+		numFds++;
+		numInts--;
+#endif
+	}
+	
+	      private_handle_t(int _fd, int _fd1, int _fd2, int _size, int _size1, int _size2,
 	                 int _flags, uint64_t _producer_usage, uint64_t _consumer_usage,
 	                 int _width, int _height, int _format, uint64_t _internal_format, int _frameworkFormat,
 	                 int _stride, int _byte_stride, int _vstride, int _is_compressible, uint32_t _layer_count)

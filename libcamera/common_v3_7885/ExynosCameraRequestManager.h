@@ -19,7 +19,6 @@
 #define CALLBACK_FPS_CHECK
 
 #include <cutils/log.h>
-#include <utils/RefBase.h>
 #include <hardware/camera3.h>
 #include <camera/CameraMetadata.h>
 #include <map>
@@ -74,19 +73,38 @@ typedef bool (ExynosCamera3::*factory_donehandler_t)();
 
 class ExynosCameraRequestResult : public virtual RefBase {
 public:
-    ExynosCameraRequestResult(){};
-    ~ExynosCameraRequestResult(){};
+    ExynosCameraRequestResult(uint32_t key, uint32_t requestKey, uint32_t frameCount, EXYNOS_REQUEST_RESULT::TYPE type){
+    m_init();
 
-    virtual uint32_t getFrameCount() = 0;
-    virtual uint32_t getKey() = 0;
+    m_key = key;
+    m_type = type;
+    m_frameCount = frameCount;
+    }
+    
+    ~ExynosCameraRequestResult();
 
-    virtual EXYNOS_REQUEST_RESULT::TYPE getType() = 0;
-    virtual status_t getCaptureResult(camera3_capture_result_t *captureResult) = 0;
-    virtual status_t getNofityMsg(camera3_notify_msg_t *notifyResult) = 0;
-    virtual status_t pushStreamBuffer(camera3_stream_buffer_t *streamBuffer) = 0;
-    virtual status_t popStreamBuffer(camera3_stream_buffer_t *streamBuffer) = 0;
-    virtual int      getNumOfStreamBuffer() = 0;
-    virtual status_t getStreamBuffer(camera3_stream_buffer_t *streamBuffer) = 0;
+    virtual uint32_t getFrameCount();
+    virtual uint32_t getRequestKey();
+    virtual uint32_t getKey();
+
+    virtual EXYNOS_REQUEST_RESULT::TYPE getType();
+    virtual status_t getCaptureResult(camera3_capture_result_t*);
+    virtual status_t getNotifyMsg(camera3_notify_msg_t*);
+    virtual status_t pushStreamBuffer(camera3_stream_buffer_t *streamBuffer);
+    virtual status_t getStreamBuffer(camera3_stream_buffer_t *streamBuffer);
+
+private:
+    status_t         m_init();
+    status_t         m_deinit();
+
+private:
+    uint32_t                     m_key;
+    uint32_t                     m_requestKey;
+    EXYNOS_REQUEST_RESULT::TYPE  m_type;
+    uint32_t                     m_frameCount;
+    camera3_capture_result_t     m_captureResult;
+    camera3_notify_msg_t         m_notityMsg;
+    camera3_stream_buffer_t      m_streamBuffer;
 };
 
 class ExynosCamera3RequestResult : public virtual ExynosCameraRequestResult {

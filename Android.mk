@@ -34,6 +34,11 @@ ifeq ($(TARGET_USES_EVF), true)
 #common_exynos_dirs += libvision
 endif
 
+ifeq ($(TARGET_USES_EXYNOS_BSP_CAMERA), true)
+common_exynos_dirs += \
+    libcamera
+endif
+
 ifeq ($(BOARD_USES_EXYNOS5_COMMON_GRALLOC), true)
 ifeq ($(BOARD_USES_EXYNOS_GRALLOC_VERSION), 0)
 common_exynos_dirs += \

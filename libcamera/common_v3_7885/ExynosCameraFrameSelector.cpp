@@ -30,8 +30,8 @@ ExynosCameraFrameSelector::ExynosCameraFrameSelector(int cameraId,
                                                      ExynosCameraBufferManager *bufMgr,
                                                      ExynosCameraFrameManager *manager
 #ifdef SUPPORT_DEPTH_MAP
-                                                    , depth_callback_queue_t *depthCallbackQ
-                                                    , ExynosCameraBufferManager *depthMapbufMgr
+                                                    , depth_callback_queue_t *m_depthCallbackQ
+                                                    , ExynosCameraBufferManager *m_depthMapbufMgr
 #endif
 #if defined(SAMSUNG_DNG_DIRTY_BAYER) || defined(DEBUG_RAWDUMP_DIRTY_BAYER)
                                                     , ExynosCameraBufferManager *DNGbufMgr
@@ -89,10 +89,10 @@ ExynosCameraFrameSelector::ExynosCameraFrameSelector(int cameraId,
 #endif
 #endif
     m_CaptureCount = 0;
-#ifdef SUPPORT_DEPTH_MAP
+/* #ifdef SUPPORT_DEPTH_MAP
     m_depthCallbackQ = depthCallbackQ;
     m_depthMapbufMgr = depthMapbufMgr;
-#endif
+#endif */
 
     m_cameraId = cameraId;
     memset(m_name, 0x00, sizeof(m_name));
@@ -615,8 +615,8 @@ status_t ExynosCameraFrameSelector::m_frameComplete(ExynosCameraFrameSP_sptr_t f
     return ret;
 }
 #else /* USE_FRAMEMANAGER */
-status_t ExynosCameraFrameSelector::m_frameComplete(ExynosCameraFrameSP_sptr_t frame, bool isForcelyDelete,                                                  int pipeID,
-                                                        int pipeID, bool isSrc, int32_t dstPos, bool flagReleaseBuf)
+status_t ExynosCameraFrameSelector::m_frameComplete(ExynosCameraFrameSP_sptr_t frame, bool isForcelyDelete,
+                                                    int pipeID, bool isSrc, int32_t dstPos, bool flagReleaseBuf)
 {
     int ret = OK;
 
@@ -629,13 +629,13 @@ status_t ExynosCameraFrameSelector::m_frameComplete(ExynosCameraFrameSP_sptr_t f
             frame->isComplete(),
             frame->getFrameCount(),
             frame->getFrameLockState());
-        delete frame;
+//        delete frame;
         frame = NULL;
     } else {
         if (frame->isComplete() == true) {
             if (frame->getFrameLockState() == false) {
                 CLOGV("frame complete, count(%d)", frame->getFrameCount());
-                delete frame;
+//                delete frame;
                 frame = NULL;
             } else {
                 CLOGV("frame is locked : isComplete(%d) count(%d) LockState(%d)",
@@ -707,7 +707,7 @@ status_t ExynosCameraFrameSelector::m_LockedFrameComplete(ExynosCameraFrameSP_sp
                     frame->getFrameCount(),
                     frame->getFrameLockState());
         }
-        delete frame;
+//        delete frame;
         frame = NULL;
     }
     return ret;
@@ -788,7 +788,7 @@ status_t ExynosCameraFrameSelector::m_clearList(frame_queue_t *list,int pipeID, 
                 }
 #else
                 if (frame->isComplete() == true) {
-                    delete frame;
+//                    delete frame;
                     frame = NULL;
                 } else {
                     if (frame->getFrameLockState() == true)
@@ -861,3 +861,4 @@ void ExynosCameraFrameSelector::wakeselectDynamicFrames(void)
     m_frameHoldList.wakeupAll();
 }
 }
+

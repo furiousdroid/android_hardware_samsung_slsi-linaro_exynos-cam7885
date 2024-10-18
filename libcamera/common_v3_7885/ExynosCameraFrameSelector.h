@@ -83,7 +83,8 @@ public:
 #endif
                             );
 #else
-    ExynosCameraFrameSelector (ExynosCameraParameters *param,
+    ExynosCameraFrameSelector (int cameraId,
+                            ExynosCameraParameters *param,
                             ExynosCameraBufferManager *bufMgr);
 #endif
     virtual ~ExynosCameraFrameSelector();

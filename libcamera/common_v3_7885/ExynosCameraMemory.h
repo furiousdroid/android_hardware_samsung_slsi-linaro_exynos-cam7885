@@ -41,7 +41,7 @@
 #endif //USE_LIB_ION_LEGACY
 #include <ui/GraphicBuffer.h>
 
-#include "gralloc_priv.h"
+#include "gralloc1_priv.h"
 #include "exynos_format.h"
 
 #include "ExynosCameraConfig.h"

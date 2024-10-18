@@ -26,10 +26,10 @@
 #include "system/camera_metadata.h"
 
 #ifdef USE_ONE_INTERFACE_FILE
-#include "ExynosCameraFrameFactory.h"
-#include "ExynosCamera.h"
+#include "hal1/ExynosCameraFrameFactory.h"
+#include "hal1/ExynosCamera.h"
 #endif
-#include "ExynosCamera3.h"
+#include "hal3/ExynosCamera3.h"
 #include "ExynosCameraInterfaceState.h"
 #include "ExynosCameraCallbackHooker.h"
 #include "pthread.h"

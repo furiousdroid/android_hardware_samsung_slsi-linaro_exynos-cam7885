@@ -29,7 +29,7 @@
 #define EXYNOS_CAMERA_PP_LIBACRYL_H
 
 #include "ExynosCameraPP.h"
-#include "acryl.h"
+#include <hardware/exynos/acryl.h>
 
 using namespace android;
 

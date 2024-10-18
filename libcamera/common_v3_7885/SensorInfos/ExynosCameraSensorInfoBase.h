@@ -328,8 +328,11 @@ public:
 #ifdef SAMSUNG_DOF
     int lensPosTbl[6];
 #endif
-
     int     seriesShotMode;
+#ifdef BURST_CAPTURE
+    int         seriesShotSaveLocation;
+    char        seriesShotFilePath[100];
+#endif
 
 #ifdef SAMSUNG_OIS
     enum optical_stabilization_mode oisMode;
@@ -1207,7 +1210,7 @@ enum {
     EFFECT_BEAUTY_FACE = (1 << 13),
 #else
     EFFECT_NONE       = (1 << COLORCORRECTION_MODE_FAST),
-    EFFECT_MONO       = (1 << COLORCORRECTION_MODE_EFFECT_MONO),
+/*    EFFECT_MONO       = (1 << COLORCORRECTION_MODE_EFFECT_MONO),
     EFFECT_NEGATIVE   = (1 << COLORCORRECTION_MODE_EFFECT_NEGATIVE),
     EFFECT_SOLARIZE   = (1 << COLORCORRECTION_MODE_EFFECT_SOLARIZE),
     EFFECT_SEPIA	  = (1 << COLORCORRECTION_MODE_EFFECT_SEPIA),
@@ -1220,6 +1223,7 @@ enum {
     EFFECT_WARM_VINTAGE = (1 << COLORCORRECTION_MODE_EFFECT_WARM_VINTAGE),
     EFFECT_COLD_VINTAGE = (1 << COLORCORRECTION_MODE_EFFECT_COLD_VINTAGE),
     EFFECT_BEAUTY_FACE = (1 << COLORCORRECTION_MODE_EFFECT_BEAUTY_FACE),
+*/
 #endif
 };
 

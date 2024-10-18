@@ -18,8 +18,10 @@
  /* #define LOG_NDEBUG 0 */
 #define LOG_TAG "ExynosJpegEncoderForCameraSec"
 
+#include <linux/videodev2.h>
 #include "ExynosCameraConfig.h"
 #include "ExynosJpegEncoderForCamera.h"
+#include "ExynosJpegEncoderForCameraGlue.h"
 
 #ifdef USE_CSC_FEATURE
 #include <cutils/properties.h>

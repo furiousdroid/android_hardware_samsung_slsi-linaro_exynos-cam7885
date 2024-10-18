@@ -34,7 +34,7 @@
 #include "ExynosCameraBufferManager.h"
 
 #include "ExynosCameraUtilsModule.h"
-#include "ExynosCameraSizeControl.h"
+#include "hal3/ExynosCameraSizeControl.h"
 
 #include "ExynosJpegApi.h"
 

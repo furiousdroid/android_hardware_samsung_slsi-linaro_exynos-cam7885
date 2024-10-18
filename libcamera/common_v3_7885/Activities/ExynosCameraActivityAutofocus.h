@@ -59,7 +59,7 @@
 #include "fimc-is-metadata.h"
 
 #ifdef SAMSUNG_UNIPLUGIN
-#include "uni_plugin_wrapper.h"
+//#include "uni_plugin_wrapper.h"
 #else
 #define UniPluginFocusData_t int
 #endif

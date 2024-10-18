@@ -44,7 +44,7 @@
 #include <hardware/exynos/ion.h>
 #endif //USE_LIB_ION_LEGACY
 
-#include "gralloc_priv.h"
+#include "gralloc1_priv.h"
 
 #include "ExynosCameraConfig.h"
 #include "fimc-is-metadata.h"

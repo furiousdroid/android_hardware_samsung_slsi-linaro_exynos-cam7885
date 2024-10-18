@@ -1044,7 +1044,7 @@ bool ExynosCamera3Parameters::m_isHighResolutionCallbackSize(const int width, co
     return highResolutionCallbackMode;
 }
 
-void ExynosCamera3Parameters::m_isHighResolutionMode(const CameraParameters& params)
+void ExynosCamera3Parameters::m_isHighResolutionMode(const android::CameraParameters& params)
 {
     bool highResolutionCallbackMode;
     int shotmode = params.getInt("shot-mode");
